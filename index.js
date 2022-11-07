@@ -8,20 +8,45 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.7;
 
 class Sprite {
-  constructor({ position, velocity }) {
+  constructor({ position, velocity, color = "red", offset }) {
     this.position = position;
     this.velocity = velocity;
+    this.width = 50;
     this.height = 150;
     this.lastKey;
+    this.attackBox = {
+      position: {
+        x: this.position.x,
+        y: this.position.y,
+      },
+      offset,
+      width: 100,
+      height: 50,
+    };
+    this.color = color;
+    this.isAttacking;
   }
 
   draw() {
-    c.fillStyle = "red";
-    c.fillRect(this.position.x, this.position.y, 50, 150);
+    c.fillStyle = this.color;
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    //Attack box
+    // if (this.isAttacking) {
+    c.fillStyle = "green";
+    c.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
+    );
   }
 
   update() {
     this.draw();
+    this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
+    this.attackBox.position.y = this.position.y;
+
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     if (this.position.y + this.height + this.velocity.y >= canvas.height) {
@@ -29,6 +54,12 @@ class Sprite {
     } else {
       this.velocity.y += gravity;
     }
+  }
+  attack() {
+    this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);
   }
 }
 
@@ -41,6 +72,10 @@ const player1 = new Sprite({
     x: 0,
     y: 0,
   },
+  offset:{
+    x: 0,
+    y: 0
+  }
 });
 
 const player2 = new Sprite({
@@ -52,6 +87,11 @@ const player2 = new Sprite({
     x: 0,
     y: 0,
   },
+  offset:{
+    x: -50,
+    y: 0
+  },
+  color: "blue",
 });
 const keys = {
   a: {
@@ -91,6 +131,20 @@ function animate() {
   } else if (keys.ArrowRight.pressed && player2.lastKey === "ArrowRight") {
     player2.velocity.x = 5;
   }
+
+  //Detect collision
+  if (
+    player1.attackBox.position.x + player1.attackBox.width >=
+      player2.position.x &&
+    player1.attackBox.position.x <= player2.position.x + player2.width &&
+    player1.attackBox.position.y + player1.attackBox.height >=
+      player2.position.y &&
+    player1.attackBox.position.y <= player2.position.y + player2.height &&
+    player1.isAttacking
+  ) {
+    player1.isAttacking = false;
+    console.log("yo");
+  }
 }
 
 animate();
@@ -109,6 +163,9 @@ window.addEventListener("keydown", (event) => {
       break;
     case "w":
       player1.velocity.y = -20;
+      break;
+    case " ":
+      player1.attack();
       break;
 
     //Player 2 keys
