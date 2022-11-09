@@ -7,7 +7,7 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
     rectangle1.attackBox.position.y + rectangle1.attackBox.height >=
       rectangle2.position.y &&
     rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-  );
+  )
 }
 function determineWinner({ player1, player2, timerId }) {
   clearTimeout(timerId);

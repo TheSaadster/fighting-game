@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  font-family: 'Press Start 2P', cursive;
 }
 .container {
   position: relative;
@@ -14,33 +15,60 @@
 }
 
 .timer {
-  background-color: red;
+  background-color: black;
   width: 100px;
-  height: 100px;
+  height: 50px;
   flex-shrink: 0;
   display:flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  border: 4px solid white;
+  border-radius: 15px;
 }
 
 .background-hp {
   height: 30px;
 
-  background-color: yellow;
+  background-color: red;
 }
 .player1-hp, .player2-hp {
-  background-color: blue;
+  background-color: #818CF8;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   width:100%;
+  border: 4px solid white;
+  transition: width 0.1s ease-in-out;
+}
+.player2-hp{
+  border-left: none;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+.player1-hp{
+  border-right: none;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+
 }
 .player2-hp{
     left:0;
 }
 .player1-hp-div .background-hp{
     width:100%;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+
+
+}
+.player2-hp-div .background-hp{
+  width:100%;
+  border-bottom-right-radius: 15px;
+  border-top-right-radius: 15px;
+
+
 }
 .player1-hp-div{
     display:flex;
