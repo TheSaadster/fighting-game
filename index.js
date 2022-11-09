@@ -3,6 +3,11 @@ const c = canvas.getContext("2d");
 
 canvas.width = 1024;
 canvas.height = 576;
+const container = document.getElementsByClassName('container')
+console.log(window.innerHeight)
+container.width = window.innerWidth
+container.height = window.innerHeight
+console.log(container)
 
 c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.7;
@@ -336,7 +341,7 @@ window.addEventListener("keydown", (event) => {
         player2.lastKey = "ArrowLeft";
         break;
       case "ArrowUp":
-        player2.velocity.y = -20;
+          player2.velocity.y = -20;
         break;
       case "Enter":
         player2.attack();
