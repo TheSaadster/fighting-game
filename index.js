@@ -6,66 +6,24 @@ canvas.height = 576;
 
 c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.7;
+const background = new Sprite({
+  position: {
+    x: 0,
+    y: 0,
+  },
+  imageSrc: "./images/background.png",
+});
 
-class Sprite {
-  constructor({ position, velocity, color = "red", offset }) {
-    this.position = position;
-    this.velocity = velocity;
-    this.width = 50;
-    this.height = 150;
-    this.lastKey;
-    this.attackBox = {
-      position: {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      offset,
-      width: 100,
-      height: 50,
-    };
-    this.color = color;
-    this.isAttacking;
-    this.health = 100;
-  }
-
-  draw() {
-    c.fillStyle = this.color;
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
-
-    //Attack box
-    if (this.isAttacking) {
-      c.fillStyle = "green";
-      c.fillRect(
-        this.attackBox.position.x,
-        this.attackBox.position.y,
-        this.attackBox.width,
-        this.attackBox.height
-      );
-    }
-  }
-
-  update() {
-    this.draw();
-    this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-    this.attackBox.position.y = this.position.y;
-
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
-    if (this.position.y + this.height + this.velocity.y >= canvas.height) {
-      this.velocity.y = 0;
-    } else {
-      this.velocity.y += gravity;
-    }
-  }
-  attack() {
-    this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 100);
-  }
-}
-
-const player1 = new Sprite({
+const shop = new Sprite({
+  position: {
+    x: 600,
+    y: 128,
+  },
+  imageSrc: "./images/shop.png",
+  scale: 2.75,
+  framesMax: 6,
+});
+const player1 = new Fighter({
   position: {
     x: 0,
     y: 0,
@@ -78,9 +36,60 @@ const player1 = new Sprite({
     x: 0,
     y: 0,
   },
+  imageSrc: "./images/player1/Idle.png",
+  framesMax: 10,
+  scale: 2.5,
+  offset: {
+    x: 150,
+    y: 102,
+  },
+  sprites: {
+    idle: {
+      name: 'idle',
+      imageSrc: "./images/player1/Idle.png",
+      framesMax: 10,
+      attack: false
+    },
+    run: {
+      name: 'run',
+      imageSrc: "./images/player1/Run.png",
+      framesMax: 8,
+      attack: false
+    },
+    jump: {
+      name: 'jump',
+      imageSrc: "./images/player1/Jump.png",
+      framesMax: 2,
+      attack: false
+    },
+    fall:{
+      name: 'fall',
+      imageSrc: "./images/player1/Fall.png",
+      framesMax: 2,
+      attack: false
+    },
+    attack1:{
+      name: 'attack1',
+      imageSrc: "./images/player1/Attack1.png",
+      framesMax: 7,
+      attack: true
+    },
+    attack2:{
+      name: 'attack2',
+      imageSrc: "./images/player1/Attack2.png",
+      framesMax: 7,
+      attack: true
+    },
+    attack3:{
+      name: 'attack3',
+      imageSrc: "./images/player1/Attack3.png",
+      framesMax: 8,
+      attack: true
+    }
+  },
 });
 
-const player2 = new Sprite({
+const player2 = new Fighter({
   position: {
     x: 400,
     y: 100,
@@ -93,7 +102,57 @@ const player2 = new Sprite({
     x: -50,
     y: 0,
   },
-  color: "blue",
+  imageSrc: "./images/player2/Idle.png",
+  framesMax: 8,
+  scale: 2,
+  offset: {
+    x: 150,
+    y: 178,
+  },
+  sprites: {
+    idle: {
+      name: 'idle',
+      imageSrc: "./images/player2/Idle.png",
+      framesMax: 8,
+      attack: false
+    },
+    run: {
+      name: 'run',
+      imageSrc: "./images/player2/Run.png",
+      framesMax: 8,
+      attack: false
+    },
+    jump: {
+      name: 'jump',
+      imageSrc: "./images/player2/Jump.png",
+      framesMax: 3,
+      attack: false
+    },
+    fall:{
+      name: 'fall',
+      imageSrc: "./images/player2/Fall.png",
+      framesMax: 3,
+      attack: false
+    },
+    attack1:{
+      name: 'attack1',
+      imageSrc: "./images/player2/Attack1.png",
+      framesMax: 8,
+      attack: true
+    },
+    attack2:{
+      name: 'attack2',
+      imageSrc: "./images/player2/Attack2.png",
+      framesMax: 8,
+      attack: true
+    },
+    attack3:{
+      name: 'attack2',
+      imageSrc: "./images/player2/Attack2.png",
+      framesMax: 8,
+      attack: true
+    },
+  },
 });
 const keys = {
   a: {
@@ -109,46 +168,15 @@ const keys = {
     pressed: false,
   },
 };
-function rectangularCollision({ rectangle1, rectangle2 }) {
-  return (
-    rectangle1.attackBox.position.x + rectangle1.attackBox.width >=
-      rectangle2.position.x &&
-    rectangle1.attackBox.position.x <=
-      rectangle2.position.x + rectangle2.width &&
-    rectangle1.attackBox.position.y + rectangle1.attackBox.height >=
-      rectangle2.position.y &&
-    rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-  );
-}
-function determineWinner({player1, player2, timerId}){
-  clearTimeout(timerId)
-  document.querySelector("#result").style.display = "flex";
-  if (player1.health === player2.health) {
-    document.querySelector("#result").innerHTML = "Tie";
-  }else if(player1.health > player2.health){
-    document.querySelector("#result").innerHTML = "Player 1 Wins";
-  }else if(player1.health < player2.health){
-    document.querySelector("#result").innerHTML = "Player 2 Wins";
-  }
-}
-let timer = 60;
-let timerId
-function decreaseTimer() {
-  timerId = setTimeout(decreaseTimer, 1000);
-  if (timer > 0) {
-    timer--;
-    document.querySelector("#timer").innerHTML = timer;
-  }
 
-  if (timer === 0) {
-    determineWinner({player1, player2, timerId})
-  }
-}
 decreaseTimer();
+
 function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = "black";
   c.fillRect(0, 0, canvas.width, canvas.height);
+  background.update();
+  shop.update();
   player1.update();
   player2.update();
 
@@ -156,20 +184,43 @@ function animate() {
   player1.velocity.x = 0; //set velocity to 0 if not pressing key
   player2.velocity.x = 0;
   //change x velocity if holding down a or d
+  //player1.framesMax = player1.sprites.idle.framesMax;
+
   if (keys.a.pressed && player1.lastKey === "a") {
     player1.velocity.x = -5;
+    player1.switchSprite('run')
+
   } else if (keys.d.pressed && player1.lastKey === "d") {
     player1.velocity.x = 5;
+    player1.switchSprite('run')
+  }else{
+    player1.switchSprite('idle')
+
+  }
+
+  if (player1.velocity.y < 0) {
+    player1.switchSprite('jump')
+  } else if(player1.velocity.y > 0){
+    player1.switchSprite('fall')
   }
 
   //player 2 movement
 
   if (keys.ArrowLeft.pressed && player2.lastKey === "ArrowLeft") {
     player2.velocity.x = -5;
+    player2.switchSprite('run')
+
   } else if (keys.ArrowRight.pressed && player2.lastKey === "ArrowRight") {
     player2.velocity.x = 5;
+    player2.switchSprite('run')
+  }else{
+    player2.switchSprite('idle')
   }
-
+  if (player2.velocity.y < 0) {
+    player2.switchSprite('jump')
+  } else if(player2.velocity.y > 0){
+    player2.switchSprite('fall')
+  }
   //Detect attack from player 1
   if (
     rectangularCollision({
@@ -196,8 +247,8 @@ function animate() {
   }
 
   //end game based on health
-  if(player2.health <= 0 || player1.health <= 0){
-    determineWinner({player1, player2, timerId})
+  if (player2.health <= 0 || player1.health <= 0) {
+    determineWinner({ player1, player2, timerId });
   }
 }
 
