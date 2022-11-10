@@ -3,12 +3,10 @@ const c = canvas.getContext("2d");
 
 canvas.width = 1024;
 canvas.height = 576;
-const container = document.getElementsByClassName('container')
-console.log(window.innerHeight)
-container.width = window.innerWidth
-container.height = window.innerHeight
-console.log(container)
-
+const backgroundMusic = document.querySelector('#music')
+const swordAttack = new Audio('./sounds/sword.mp3')
+const mageAttack = new Audio('./sounds/mage.mp3')
+backgroundMusic.play()
 c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.7;
 const background = new Sprite({
@@ -30,7 +28,7 @@ const shop = new Sprite({
 });
 const player1 = new Fighter({
   position: {
-    x: 0,
+    x: -100,
     y: 0,
   },
   velocity: {
@@ -116,7 +114,7 @@ const player1 = new Fighter({
 
 const player2 = new Fighter({
   position: {
-    x: 400,
+    x: 700,
     y: 100,
   },
   velocity: {
@@ -214,12 +212,11 @@ const keys = {
   },
 };
 
-decreaseTimer();
+// decreaseTimer();
 
 function animate() {
   window.requestAnimationFrame(animate);
-  c.fillStyle = "black";
-  c.fillRect(0, 0, canvas.width, canvas.height);
+  
   background.update();
   shop.update();
   c.fillStyle = 'rgba(255,255,255,0.1)'
@@ -266,7 +263,7 @@ function animate() {
     player2.switchSprite("fall");
   }
   //Detect attack from player 1
-  if (
+  if ( timer !== 0 &&
     rectangularCollision({
       rectangle1: player1,
       rectangle2: player2,
@@ -282,7 +279,7 @@ function animate() {
   if (player1.isAttacking && player1.frameCurrent === 4) {
     player1.isAttacking = false;
   }
-  if (
+  if ( timer !== 0 &&
     rectangularCollision({
       rectangle1: player1,
       rectangle2: player2,
@@ -302,10 +299,22 @@ function animate() {
   //end game based on health
   if (player2.health <= 0 || player1.health <= 0) {
     determineWinner({ player1, player2, timerId });
+    askRestart();
   }
 }
 
-animate();
+// animate();
+function startGame(){
+  const start = document.querySelector('#start-screen')
+  start.style.display = 'none'
+  animate();
+  decreaseTimer();
+}
+function askRestart(){
+  const restart = document.querySelector("#restart")
+  restart.style.display = 'block'
+}
+
 
 //sets pressed value of corresponding keys value to true
 window.addEventListener("keydown", (event) => {
@@ -325,6 +334,9 @@ window.addEventListener("keydown", (event) => {
         player1.velocity.y = -20;
         break;
       case " ":
+        swordAttack.pause()
+        swordAttack.currentTime=0
+        swordAttack.play()
         player1.attack();
         break;
     }
@@ -344,6 +356,9 @@ window.addEventListener("keydown", (event) => {
           player2.velocity.y = -20;
         break;
       case "Enter":
+        mageAttack.pause()
+        mageAttack.currentTime = 0
+        mageAttack.play()
         player2.attack();
         break;
     }
