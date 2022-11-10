@@ -88,7 +88,7 @@ class Fighter extends Sprite {
     this.health = 100;
     this.sprites = sprites;
     this.attackArray = [];
-    this.dead = false;
+    this.dead = true;
     for (const sprite in this.sprites) {
       sprites[sprite].image = new Image();
       sprites[sprite].image.src = sprites[sprite].imageSrc;

@@ -1,12 +1,11 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+const backgroundMusic = document.querySelector("#music");
 canvas.width = 1024;
 canvas.height = 576;
-const backgroundMusic = document.querySelector('#music')
 const swordAttack = new Audio('./sounds/sword.mp3')
 const mageAttack = new Audio('./sounds/mage.mp3')
-backgroundMusic.play()
 c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.7;
 const background = new Sprite({
@@ -307,6 +306,10 @@ function animate() {
 function startGame(){
   const start = document.querySelector('#start-screen')
   start.style.display = 'none'
+  backgroundMusic.play();
+  player1.dead = false;
+  player2.dead = false;
+
   animate();
   decreaseTimer();
 }
